@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load myFilters %}
+
+
+{% block content %}
+<script type="text/javascript">
+if (!($.browser.msie)){
+$(function(){ $("input:radio, input:text, input:submit").uniform(); });
+}
+$(function(){
+$(".tip").tipTip({defaultPosition:"right", activation:"focus", maxWidth:350, fadeIn:500, fadeOut:500});
+});
+$(function(){
+$(".tip2").tipTip({defaultPosition:"right", edgeOffset:100, activation:"focus", maxWidth:350, fadeIn:500, fadeOut:500});
+});
+</script> 
+
+<div id="form">
+	<h3>Search contigs</h3><hr width="25%" align="left"><br>
+	<form id="formContig" action="." method="GET">
+	<table>
+	<tr style="height:27px;">
+		<td><label for="name"> Name: </label></td>
+		<td><input type="text" name="name" value="{{ values.name|escape }}" class="tip" title="Insert contig sequence name"></td>
+	</tr>
+	<tr style="height:27px;">
+		<td><label for="length">Length: </label></td>
+		<td>
+			<select name="length_sign" id="length_sign" onChange="if($(this).val()==4){$('#divBetweenLength').show();$('#divBetweenLength').css('display','inline');$('#length').hide();$('#val_length').hide();}else if($(this).val()==0){$('#val_length').hide(); $('#divBetweenLength').hide();$('#length').hide();}else{$('#divBetweenLength').hide();$('#length').show();$('#val_length').hide();}">
+				<option index="0" value="0">Any</option>
+				<option index="1" value="1">&gt;=</option>
+				<option index="2" value="2">==</option>
+				<option index="3" value="3">&lt;=</option>
+				<option index="4" value="4">Between</option>
+			</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="text" name="length" id="length" style="display:none" value='{{ values.length|escape|empty_default:"0" }}' size=5 onfocus="$('#val_length').hide(250);" title="Length should be a number between 0 and 6000" class="tip"> 
+			<div style="display:none" id="divBetweenLength">
+			<input type="text" name="length1" id="length1" value='{{ values.length|escape|empty_default:"0" }}' size=5 onfocus="$('#val_length').hide(250);" title="Length should be a number between 0 and 6000" class="tip2">
+and&nbsp;&nbsp;<input type="text" name="length2" id="length2" value='{{ values.length|escape|empty_default:"0" }}' size=5 onfocus="$('#val_length').hide(250);" title="Length should be a number between 0 and 6000" class="tip"> </div>
+		</td>
+		<td><div id="val_length" class="validate" style="display:none"> Length should be between 0 and 6000.</div>
+		</td>
+	</tr>
+	<tr style="height:27px;">
+		<td><label for="gc">%GC content: </label></td>
+		<td>
+			<select name="gc_sign" id="gc_sign" onChange="if($(this).val()==4){$('#divBetweenGC').show();$('#divBetweenGC').css('display','inline');$('#gc').hide();$('#val_gc').hide();}else if($(this).val()==0){$('#val_gc').hide(); $('#divBetweenGC').hide();$('#gc').hide();}else{$('#divBetweenGC').hide();$('#gc').show();$('#val_gc').hide();}">
+				<option index="0" value="0">Any</option>
+				<option index="1" value="1">&gt;=</option>
+				<option index="2" value="2">==</option>
+				<option index="3" value="3">&lt;=</option>
+				<option index="4" value="4">Between</option>
+		</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="text" name="gc" id="gc" style="display:none" value='{{ values.gc|escape|empty_default:"0" }}' size=5 onfocus="$('#val_gc').hide(250);" title="GC percentage should be a number between 0 and 100" class="tip"> 
+		<div style="display:none" id="divBetweenGC">
+		<input type="text" name="gc1" id="gc1" value='{{ values.gc1|escape|empty_default:"0" }}' size=5 onfocus="$('#val_gc').hide(250);" title="GC perecentage should be a number between 0 and 100" class="tip2">
+and&nbsp;&nbsp;<input type="text" name="gc2" id="gc2" value='{{ values.gc2|escape|empty_default:"0" }}' size=5 onfocus="$('#val_gc').hide(250);" title="GC percentage should be a number between 0 and 100" class="tip"> </div>
+		</td>
+		<td><div id="val_gc" class="validate" style="display:none"> GC percentage should be between 0 and 100.</div>
+		</td>
+	</tr>
+	<tr style="height:27px;">
+		<td><label for="nreads">Number of reads: </label></td>
+		<td>
+			<select name="nreads_sign" id="nreads_sign" onChange="if($(this).val()==4){$('#divBetweenReads').show();$('#divBetweenReads').css('display','inline');$('#nreads').hide();$('#val_nreads').hide();}else if($(this).val()==0){$('#val_nreads').hide(); $('#divBetweenReads').hide();$('#nreads').hide();}else{$('#divBetweenReads').hide();$('#nreads').show();$('#val_nreads').hide();}">
+				<option index="0" value="0">Any</option>
+				<option index="1" value="1">&gt;=</option>
+				<option index="2" value="2">==</option>
+				<option index="3" value="3">&lt;=</option>
+				<option index="4" value="4">Between</option>
+			</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="text" name="nreads" id="nreads" style="display:none" value='{{ values.nreads|escape|empty_default:"0" }}' size=5 onfocus="$('#val_nreads').hide(250);" title="Insert number of reads assembled" class="tip"> 
+			<div style="display:none" id="divBetweenReads">
+			<input type="text" name="nreads1" id="nreads1" value='{{ values.nreads1|escape|empty_default:"0" }}' size=5 onfocus="$('#val_nreads').hide(250);" title="Insert number of reads assembled" class="tip2">
+and&nbsp;&nbsp;<input type="text" name="nreads2" id="nreads2" value='{{ values.nreads2|escape|empty_default:"0" }}' size=5 onfocus="$('#val_nreads').hide(250);" title="Insert number of reads assembled" class="tip"> </div>
+		</td>
+		<td><div id="val_nreads" class="validate" style="display:none"> Reads should be between 0 and 2000.</div>
+		</td>
+	</tr>
+	<tr><td>All</td><td><input value="ALL" type="radio" name="HASTRANS" checked></td></tr>
+	<tr><td>With translation</td><td><input value="TRANS" type="radio" name="HASTRANS" ></td></tr>
+	<tr><td>Without translation</td><td><input value="NOTRANS" type="radio" name="HASTRANS" ></td>	</tr>
+	</table>
+
+<br>
+<div style="margin-left:90px">	
+<input type="button" value="Search" 
+onclick= "searchContigs();">
+	</form></div></div><br>
+	<br>
+	
+<script type="text/javascript">
+loadSearchContig();
+</script>
+	
+{% endblock %}
+
+

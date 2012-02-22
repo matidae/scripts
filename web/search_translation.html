@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load myFilters %}
+{% block content %}
+
+<script type="text/javascript" >
+$(function() {  
+    $( "#keyword" ).autocomplete({
+        source: '/search/translations/?auto=key'
+    });
+});
+$(function() {  
+    $( "#ec" ).autocomplete({
+        source: '/search/translations/?auto=ec'
+    });
+});
+$(function() {  
+    $( "#go" ).autocomplete({
+        source: '/search/translations/?auto=go'
+    });
+});
+</script>
+<script type="text/javascript">
+$(function(){ $("input:radio, input:text, input:submit").uniform(); });
+$(function(){
+$(".tip").tipTip({defaultPosition:"right", activation:"focus", maxWidth:350, fadeIn:500, fadeOut:500});
+});
+$(function(){
+$(".tip2").tipTip({defaultPosition:"right", edgeOffset:100, activation:"focus", maxWidth:350, fadeIn:500, fadeOut:500});
+});
+</script>
+
+<div id="form"><br>
+	<h3>Search translations</h3><hr width="25%" align="left"><br>
+	<form id="formTranslation" method="GET">
+	<table>
+	<tr style="height:27px;">
+		<td><label for="name"> Name: </label></td>
+		<td><input class="tip" type="text" name="seqName" value="{{ seqName|escape }}" title="Insert sequence name."></td>
+	</tr>
+	<tr style="height:27px;">
+		<td><label for="length">Length: </label></td>
+		<td>
+			<select name="length_sign" id="length_sign" onChange="if($(this).val()==4){$('#divBetween').show();$('#divBetween').css('display','inline');$('#length').hide();$('#val_length').hide();}else if($(this).val()==0){$('#val_length').hide(); $('#divBetween').hide();$('#length').hide();}else{$('#divBetween').hide();$('#length').show();$('#val_length').hide();}">
+				<option index="0" value="0">Any</option>
+				<option index="1" value="1">&gt;=</option>
+				<option index="2" value="2">==</option>
+				<option index="3" value="3">&lt;=</option>
+				<option index="4" value="4">Between</option>
+			</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="text" name="length" id="length" style="display:none" value='{{ values.length|escape|empty_default:"0" }}' size=5 onfocus="$('#val_length').hide(250);" title="Length should be a number between 0 and 2000" class="tip"> 
+			<div style="display:none" id="divBetween">
+			<input type="text" name="length1" id="length1" value='{{ values.length|escape|empty_default:"0" }}' size=5 onfocus="$('#val_length').hide(250);" title="Length should be a number between 0 and 2000" class="tip2">
+and&nbsp;&nbsp;<input type="text" name="length2" id="length2" value='{{ values.length|escape|empty_default:"0" }}' size=5 onfocus="$('#val_length').hide(250);" title="Length should be a number between 0 and 2000" class="tip"> </div>
+		</td>
+		<td><div id="val_length" class="validate" style="display:none"> Length should be between 0 and 2000.</div></td>
+	</tr>
+	<tr style="height:27px;">
+		<td><label for="keyword">Keyword: </label></td>
+		<td><input type="text" name="keyword" id="keyword" value="" autocomplete="off" class="tip" title="Insert a term or descriptor of the query."></td>
+	</tr>
+	<tr style="height:27px;">
+		<td><label for="ec">EC number:</label></td>
+		<td><input type="text" name="ec" id="ec" value="" autocomplete="off" class="tip" title="Insert Enzyme Commision access number"></td>
+	</tr>
+	<tr style="height:27px;">
+		<td><label for="go">GO number:</label></td>
+		<td><input type="text" name="go" id="go" value="" autocomplete="off" class="tip" title="Insert Gene Ontology access number"></td>
+	</tr>
+	</table>
+	<br>
+	<b>Blast search options</b><br><br>
+	<table>
+	<tr style="height:25px;"><td><input type="radio" name="BH" value="ALL" onClick="$('evalueField').disabled='true';$('evalueField').value='';$('#val_evalue').hide(250);$('#evalue').hide();" checked="True"/> Search all</td><td></td><td></td></tr>
+	<tr style="height:25px;"><td><input type="radio" name="BH" value="NoBH" onClick="$('evalueField').disabled='true';$('evalueField').value='';$('#val_evalue').hide(250);$('#evalue').hide();"/> With no Blast Hit</td><td></td><td></td></tr>
+	<tr style="height:25px;">
+		<td><input type="radio" id="BH" name="BH" value="BH" onClick="$('#evalueField').attr('disabled',false);$('#evalue').css('display','inline');$('#evalue').show();"/> With Blast Hit</td>
+<td><div id="evalue" style="display:none;">
+		<label for="length">E-value cutoff: 1e-</label>&nbsp;&nbsp;&nbsp;&nbsp;
+		<input id="evalueField" type="text" name="evalue_exp_cutoff" disabled="true" value="{{ values.evalue_exp_cutoff|escape|empty_default:"0"}}" size=3 onfocus="$('#val_evalue').hide(250);" title="e-value exponent should be between 0 and 200" class="tip"></div><td><div id="val_evalue" class="validate" style="display:none"> Field should be between 0 and 200.</div></td></td>
+	</tr>
+	</table>
+	<br>
+	<div style="margin-left:90px">	
+	<input type="button" value="Search" 
+onclick= "searchTranslations();">
+	</form></div></div><br>
+	<br>
+	
+<script type="text/javascript">
+loadSearchTranslation();
+</script>
+	
+{% endblock %}
+
+
+
