@@ -1,0 +1,125 @@
+#container {
+   height:100%;
+}
+
+
+div.scroll {
+height: 200px;
+width: 300px;
+overflow: auto;
+border: 1px solid #666;
+background-color: #ccc;
+padding: 8px;
+}
+
+
+div.navBar {
+}
+
+
+.seqText{
+	font-family: monospace;
+	font-size: 11px; 
+}
+
+
+.box-footer{
+	font-family: monospace;
+	font-size: 10px; 
+	color: grey;
+	text-align: center;
+	vertical-align: middle;
+	align: center;
+	position:absolute;
+	bottom:10;
+	height:30px; 
+	width: 99%;
+}
+
+
+html, body 
+    {
+        height: 100%;
+		font-family: arial;
+		font-size: 13px
+    }
+
+
+.title{
+	font-family: arial;
+	font-size: 25px; 
+	color: black;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+h3{
+	font-family: arial;
+}
+a{
+	text-decoration: none;
+	color: #250;
+}
+
+
+a:hover{
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+#hor-minimalist-a
+{
+	font-family: arial;
+	font-size: 13px;
+	background: #fff;
+	border-collapse: collapse;
+	text-align: left;
+}
+#hor-minimalist-a th
+{
+	font-size: 14px;
+	font-weight: heavy;
+	padding: 10px 8px;
+	border-bottom: 2px solid #000;
+    cursor: pointer;
+}
+#hor-minimalist-a td
+{
+	border-bottom: 1px solid #ccc;
+	padding: 6px 8px 4px 8px;
+}
+#hor-minimalist-a tbody tr:hover td
+{
+    background: #eee;
+}
+
+h1 {
+  font: bold 100%/100% "arial";
+  position: relative;
+  color: #464646;
+  text-shadow: 0.15em 0.15em 0.35em #333;
+}
+
+
+#iform{
+margin-left:40px;
+padding-left:80px;
+width:340px;
+background-image:url('paper.jpg');
+background-repeat:repeat-y;
+-moz-border-radius: 75px;
+border-radius: 75px;
+}
+
+.validate{
+color:red;
+border:1px grey solid;
+border-radius: 7px; 
+padding:3px; 
+font-size: 11px;
+}
+
+#form{
+margin-left:20px;
+padding-left:40px;
+}
