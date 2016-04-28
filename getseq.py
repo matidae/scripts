@@ -12,7 +12,14 @@ args = parser.parse_args()
 fasta = args.fasta
 data = SeqIO.index(fasta, "fasta")
 seqs = args.seqs
-
 with open(seqs) as listseq:
     for i in listseq:
-        print data[i.rstrip()].format("fasta")
+        if args.u:
+            print ">" + i.rstrip()
+            n = 0
+            seq = data[i.rstrip()].seq
+            for j in xrange(0, len(seq)/60 + 1):
+                print seq[n:n+60]
+                n+=60
+        else:
+            print data[i.rstrip()].format("fasta")
