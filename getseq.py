@@ -1,9 +1,18 @@
 #!/usr/bin/env python
 import sys
+import argparse
 from Bio import SeqIO
 
-data = SeqIO.index(sys.argv[1], "fasta")
+parser = argparse.ArgumentParser()
+parser.add_argument("fasta", help="Fasta file")
+parser.add_argument("seqs", help="File with sequence names or comma separated sequence names")
+parser.add_argument("-u", help="Print each sequence in a single line", action="store_true")
+args = parser.parse_args()
 
-with open(sys.argv[2]) as lista:
-    for i in lista:
+fasta = args.fasta
+data = SeqIO.index(fasta, "fasta")
+seqs = args.seqs
+
+with open(seqs) as listseq:
+    for i in listseq:
         print data[i.rstrip()].format("fasta")
