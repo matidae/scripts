@@ -37,7 +37,6 @@ parser.add_argument("seqs", help="File with sequence names or comma separated se
 parser.add_argument("-u", help="Print each sequence in a single line", action="store_true")
 parser.add_argument("-r", help="Print reverse complement sequence", action="store_true")
 parser.add_argument("-l", help="Print length and name of a sequence", action="store_true")
-parser.add_argument("-a", help="Use all sequences in fasta file, sequence names not needed", action="store_true")
 args = parser.parse_args()
 
 if "-" not in args.seqs:
