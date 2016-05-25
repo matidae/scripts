@@ -1,3 +1,12 @@
+# Script that calculates a substitution matrix of 4X4 (ATGC) for each sequence avoiding polymorphic positions.
+# The idea is to look for non-random bias in the sequencing noise
+# It takes two parameters:
+# 1) a mapping file created with samtools mpileup and a reference (created as: samtools mpileup -A mapping.sam -f reference.fasta)
+# 2) a decimal between 0 and 1 of the proportion of mismatches that should be considered as a polymorphism.
+# (e.g if I choose 0.6 it means that if more than 60% of nucleotides at that position are diferent from the reference, then it's considered as a polymorphism and is not taken into account)
+# How to run it :  ./subst_matrix_calc.py file.mpileup 0.6 > matrix
+
+#!/usr/bin/env python
 import sys
 
 temp_name = ""
