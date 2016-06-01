@@ -33,8 +33,8 @@ def printSeq(seq):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("fasta", help="Fasta file", nargs="?")
-parser.add_argument("seqs", help="File with sequence names or comma separated sequence names", nargs="?", default="-")
-parser.add_argument("-u", help="Print each sequence in a single line", action="store_true")
+parser.add_argument("seqs", help="File with sequence names or comma separated sequence names (e.g 'list.txt' or 'gene1,gene2,gene3')", nargs="?", default="-")
+parser.add_argument("-u", help="Print each sequence in a single line (default: 60 chars per line)", action="store_true")
 parser.add_argument("-r", help="Print reverse complement sequence", action="store_true")
 parser.add_argument("-l", help="Print length and name of a sequence", action="store_true")
 args = parser.parse_args()
