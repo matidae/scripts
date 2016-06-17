@@ -1,8 +1,14 @@
 #!/usr/bin/env python
-import sys, re
+import sys
+import re
 from Bio import SeqIO
 
+
 def process_nuc(ref, base_list):
+    """Parsea una entrada de mapeo del pileup a un formato mas legible.
+    Input: base de referencia, lista de bases mapeadas en formato CIGAR.
+    Output: lista de bases para cada posicion
+    """
     base_list_new = []
     c = 1
     start_flag = False
@@ -40,6 +46,7 @@ def process_nuc(ref, base_list):
 
 
 def process_qual(qual_list):
+    """Procesa un string de calidad. Input: ASCII string. Output:INT string"""
     qual_list_new = []
     for qual in qual_list:
         qual_list_new.append(ord(qual))
@@ -47,6 +54,10 @@ def process_qual(qual_list):
 
 
 def filter_by_qual(base_list_new, qual_list_new):
+    """Elimina bases con calidad inferior a 20. 
+    Input: lista de bases, lista de calidades como integers.
+    Output: lista de bases trimmeadas en base a su score de calidad.
+    """
     c = 0
     base_list_filtered = []
     qual_list_filtered = []
@@ -58,6 +69,11 @@ def filter_by_qual(base_list_new, qual_list_new):
 
 
 def get_base(ref, base_list_filtered):
+    """ Determina que base corresponde en una posicion dada.
+    Input: base de referencia, lista de bases en esa posicion
+    Output: base mas probable, conteo de esa base, prop de read tails, 
+    depth total, prop de base ref
+    """
     base_set = list(set(base_list_filtered))
     base_count = []
     for base in base_set:
