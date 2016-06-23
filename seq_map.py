@@ -89,10 +89,16 @@ def get_base(ref, base_list_filtered):
 
 
 def is_del(seq, c, del_len):
+    """ Evalua si existe la delecion contando cuantos reads en posiciones
+    posteriores avalan la delecion.
+    Input: entrada con la delecion, posicion, largo de la delecion
+    Output: booleano resultado de la evaluacion
+    """
     for_del = seq[c][1]
     not_del = 0
     for i in xrange(del_len):
-        not_del += seq[c+i+1][1]
+        if len(seq) > c+i+1:
+            not_del += seq[c+i+1][1] * seq[c+i+1][2]
     return for_del > not_del
 
 
