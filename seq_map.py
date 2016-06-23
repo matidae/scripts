@@ -14,34 +14,36 @@ def process_nuc(ref, base_list):
     start_flag = False
     while c < len(base_list):
         if (base_list[c] == "-" or base_list[c] == "+") and \
-             base_list[c-1] != "^":
+        base_list[c-1] != "^":
             indel_len = ''
-            for i in base_list[c+1]:
+            for i in base_list[c+1:c+3]:
                 if '0' <= i <= '9':
                     indel_len += i
                 else:
                     break
             indel_len = int(indel_len)
-            indel_base = base_list[c-1: c+indel_len+2].replace(".", ref).
+            indel_base = base_list[c-1: c+indel_len+2].replace(".", ref).\
             replace(",", ref)
             base_list_new.append(indel_base.upper())
             c += indel_len + 3
         elif base_list[c-1] == "^":
             c += 2
             start_flag = True
-        elif base_list[c-1] == "$" or base_list[c-1] == "*":
+        elif base_list[c-1] == "$":
             c += 1
-            base_list_new[:-1] + base_list_new[-1].lower()
+            base_list_new[:-1] + [base_list_new[-1].lower()]
+        elif base_list[c-1] == "*":
+            c += 1
         elif base_list[c-1] == "." or base_list[c-1] == ",":
             base_list_new.append(ref.upper())
             c += 1
         else:
-            if border_flag:
+            if start_flag:
                 base_list_new.append(base_list[c-1].lower())
             else:
                 base_list_new.append(base_list[c-1].upper())
             start_flag = False
-            c += 1
+            c += 1    
     return base_list_new
 
 
@@ -95,6 +97,10 @@ def is_del(seq, c, del_len):
 
 
 def process_seq(seq, name):
+    """ Evalua la base considerando su contexto, considerando depth e indels
+    Input: lista de elementos de secuencia que contienen la salida de get_base
+    Output: base a imprimir
+    """
     final_seq = ""
     c = 0
     while c < len(seq):
@@ -118,6 +124,10 @@ def process_seq(seq, name):
 
 
 def parse_entry(entry):
+    """ Parsea los registros de pileup para posterior procesado y controla
+    el pipeline  Input: linea de una salida de pileup
+    Output: lista de bases +info a ser evaluada por process_seq()
+    """
     ref = entry.split()[2].lower()
     depth = int(entry.split()[3])
     if depth > 0:
@@ -133,6 +143,9 @@ def parse_entry(entry):
 
 
 def main(pileup_file, fasta_file):
+    """Punto de entrada, si hay info llama a parse_entry, sino utiliza
+    fasta como guia   Input: pileup file, multifasta
+    Output: imprime la secuencia procesada """
     for record in SeqIO.parse(fasta_file, "fasta"):
         seq = []
         fasta_name = record.id
