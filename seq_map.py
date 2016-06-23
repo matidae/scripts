@@ -76,16 +76,20 @@ def get_base(ref, base_list_filtered):
     Output: base mas probable, conteo de esa base, prop de read tails,
     depth total, prop de base ref
     """
-    base_set = list(set(base_list_filtered))
+    base_set = list(set([x.upper() for x in base_list_filtered]))
     base_count = []
     for base in base_set:
         base_count.append(base_list_filtered.count(base))
     if sum(base_count) > 0:
         seq = base_set[base_count.index(max(base_count))]
         max_count = max(base_count)
-        return (seq, max_count)
+        prop_end = base_list_filtered.count(seq.lower())*1.0/max_count
+        prop_ref = (base_list_filtered.count(ref) + base_list_filtered.
+                    count(ref.lower())) * 1.0 / len(base_list_filtered)
+        return (seq, max_count, prop_end, len(base_list_filtered),
+                prop_ref, ref)
     else:
-        return (ref, 0)
+        return (ref, 0, 0, 0, 1, ref)
 
 
 def is_del(seq, c, del_len):
@@ -102,31 +106,40 @@ def is_del(seq, c, del_len):
     return for_del > not_del
 
 
-def process_seq(seq, name):
+def process_seq(seq, fasta_seq):
     """ Evalua la base considerando su contexto, considerando depth e indels
     Input: lista de elementos de secuencia que contienen la salida de get_base
     Output: base a imprimir
     """
     final_seq = ""
     c = 0
+    coord_vector = []
     while c < len(seq):
-        if "-" in seq[c][0]:
-            del_len = int(re.findall('\d+', seq[c][0])[0])
-            isdel = is_del(seq, c, del_len)
-            if isdel:
-                final_seq += seq[c][0][0]
-                c += del_len + 1
-            else:
-                final_seq += seq[c][0][0]
-                c += 1
-        elif "+" in seq[c][0]:
-            final_seq += "".join(re.findall('[A-Z]', seq[c][0]))
+        if seq[c][4] > 0.25 and seq[c][3] > 100:
+            final_seq += seq[c][5]
+            coord_vector.append(0)
             c += 1
         else:
-            final_seq += seq[c][0]
-            c += 1
-    print ">" + name
-    print final_seq
+            if "-" in seq[c][0]:
+                del_len = int(re.findall('\d+', seq[c][0])[0])
+                isdel = is_del(seq, c, del_len)
+                if isdel:
+                    final_seq += seq[c][0][0]
+                    coord_vector = coord_vector + [-1] * del_len
+                    c += del_len + 1
+                else:
+                    final_seq += seq[c][0][0]
+                    coord_vector.append(0)
+                    c += 1
+            elif "+" in seq[c][0]:
+                final_seq += "".join(re.findall('[A-Z]', seq[c][0]))
+                coord_vector.append("".join(re.findall('\d+', seq[c][0])))
+                c += 1
+            else:
+                final_seq += seq[c][0]
+                coord_vector.append(0)
+                c += 1
+    return (final_seq, coord_vector)
 
 
 def parse_entry(entry):
@@ -141,11 +154,11 @@ def parse_entry(entry):
         qual_list = entry.split()[5]
         base_list_new = process_nuc(ref, base_list)
         qual_list_new = process_qual(qual_list)
-        base_list_filtered = filter_by_qual(base_list_new, qual_list_new)
+        base_list_filtered = filter_by_qual(base_list_new, qual_list_new)        
         seq_aux = get_base(ref, base_list_filtered)
         return seq_aux
     else:
-        return (ref, 0)
+        return (ref, 0, 0, 0, 1, ref)
 
 
 def main(pileup_file, fasta_file):
