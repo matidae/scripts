@@ -161,6 +161,21 @@ def parse_entry(entry):
         return (ref, 0, 0, 0, 1, ref)
 
 
+def compare_position(count, seq, entry, fasta_seq):
+    pos = int(entry.split()[1])
+    if count == pos:
+        seq.append(parse_entry(entry))
+        count += 1
+    else:
+        while count < pos:
+            seq.append((fasta_seq[count-1], 0, 0, 0, 1,
+                        fasta_seq[count-1]))
+            count += 1
+        seq.append(parse_entry(entry))
+        count += 1
+    return [seq, count]
+
+
 def main(pileup_file, fasta_file):
     """Punto de entrada, si hay info llama a parse_entry, sino utiliza
     fasta como guia   Input: pileup file, multifasta
