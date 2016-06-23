@@ -161,6 +161,20 @@ def parse_entry(entry):
         return (ref, 0, 0, 0, 1, ref)
 
 
+def check_new_files(fasta_file):
+    out_fasta = ""
+    out_coord = ""
+    if "." in fasta_file:
+        out_fasta = ".".join(fasta_file.split('.')[:-1]) + ".new.fa"
+        out_coord = ".".join(fasta_file.split('.')[:-1]) + ".new.coor"
+    else:
+        out_fasta = fasta_file + ".new.fa"
+        out_coord = fasta_file + ".new.coord"
+    open(out_fasta, 'w').close()
+    open(out_coord, 'w').close()
+    return [out_fasta, out_coord]
+
+
 def compare_position(count, seq, entry, fasta_seq):
     pos = int(entry.split()[1])
     if count == pos:
@@ -200,6 +214,7 @@ def main(pileup_file, fasta_file):
                         seq.append(parse_entry(entry))
                         count += 1
         process_seq(seq, name)
+
 
 if __name__ == "__main__":
     pileup_file = sys.argv[1]
