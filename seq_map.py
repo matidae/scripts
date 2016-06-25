@@ -10,41 +10,14 @@ def process_nuc(ref, base_list):
     Output: lista de bases para cada posicion
     """
     base_list_new = []
-    c = 1
-    start_flag = False
-    while c < len(base_list):
-        if (base_list[c] == "-" or base_list[c] == "+") and \
-        base_list[c-1] != "^":
-            indel_len = ''
-            for i in base_list[c+1:c+3]:
-                if '0' <= i <= '9':
-                    indel_len += i
-                else:
-                    break
-            indel_len = int(indel_len)
-            indel_base = base_list[c-1: c+indel_len+2].replace(".", ref).\
-            replace(",", ref)
-            base_list_new.append(indel_base.upper())
-            c += indel_len + 3
-        elif base_list[c-1] == "^":
-            c += 2
-            start_flag = True
-        elif base_list[c-1] == "$":
-            c += 1
-            base_list_new[:-1] + [base_list_new[-1].lower()]
-        elif base_list[c-1] == "*":
-            c += 1
-        elif base_list[c-1] == "." or base_list[c-1] == ",":
-            base_list_new.append(ref.upper())
-            c += 1
-        else:
-            if start_flag:
-                base_list_new.append(base_list[c-1].lower())
-            else:
-                base_list_new.append(base_list[c-1].upper())
-            start_flag = False
-            c += 1    
-    return base_list_new
+    base_list = base_list.replace(".", ref).replace(",", ref).upper()
+    indels =  set(re.findall("\d+", base_list))
+    indels = "|".join([".."+i+".{"+i+"}" for i in indels])
+    base_list = re.sub('\^.(.)', lambda x:x.expand(r'\1').lower(), base_list)
+    base_list = re.sub('(.)\$', lambda x:x.expand(r'\1').lower(), base_list)
+    indels_new = map(lambda x:x.upper(), re.findall(indels,base_list))
+    base_list = list(re.sub(indels,'',base_list))
+    return base_list + indels_new
 
 
 def process_qual(qual_list):
