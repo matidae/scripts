@@ -10,7 +10,7 @@ def process_nuc(ref, base_list):
     Output: lista de bases para cada posicion
     """
     base_list_new = []
-    base_list = base_list.replace(".", ref).replace(",", ref).upper()
+    base_list = base_list.replace(".", ref).replace(",", ref).replace("*","").upper()
     indels =  set(re.findall("\d+", base_list))
     indels = "|".join([".."+i+".{"+i+"}" for i in indels])
     base_list = re.sub('\^.(.)', lambda x:x.expand(r'\1').lower(), base_list)
