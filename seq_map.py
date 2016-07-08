@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import re
+import os.path as path
 from Bio import SeqIO
 
 
@@ -114,7 +115,15 @@ def process_seq(seq, fasta_seq):
                 c += 1
     return (final_seq, coord_vector)
 
+def write_file(name, seq, coord_vector, out_fasta, out_coord):
+    out_fasta = open(out_fasta, "a")
+    out_fasta.write(">" + name + "\n" + seq + "\n")
+    out_fasta.close()
 
+    out_coord = open(out_coord, "a")
+    out_coord.write(name + "\t" + ",".join(map(str, coord_vector)) + "\n")
+    out_coord.close()
+    
 def parse_entry(entry):
     """ Parsea los registros de pileup para posterior procesado y controla
     el pipeline  Input: linea de una salida de pileup
@@ -167,11 +176,11 @@ def main(pileup_file, fasta_file):
     """Punto de entrada, si hay info llama a parse_entry, sino utiliza
     fasta como guia   Input: pileup file, multifasta
     Output: imprime la secuencia procesada """
-    for record in SeqIO.parse(fasta_file, "fasta"):
-        seq = []
-        fasta_name = record.id
-        fasta_seq = str(record.seq)
-        count = 1
+    fasta = SeqIO.index(fasta_file, "fasta")
+    seq = []
+    count = 1
+    fasta_name = ""
+    out_file = check_new_files(fasta_file)
         with open(sys.argv[1]) as pileup:
             for entry in pileup:
                 name = entry.split()[0]
