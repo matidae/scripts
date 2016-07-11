@@ -174,6 +174,14 @@ def compare_position(count, seq, entry, fasta_seq):
     return [seq, count]
 
 
+def final_positions(count, seq, fasta_seq):
+    while count <= len(fasta_seq):
+        seq.append((fasta_seq[count-1], 0, 0, 0, 1,
+                    fasta_seq[count-1]))
+        count += 1
+    return [seq, count]
+
+
 def main(pileup_file, fasta_file):
     """Punto de entrada, si hay info llama a parse_entry, sino utiliza
     fasta como guia   Input: pileup file, multifasta
@@ -183,21 +191,38 @@ def main(pileup_file, fasta_file):
     count = 1
     fasta_name = ""
     out_file = check_new_files(fasta_file)
-        with open(sys.argv[1]) as pileup:
-            for entry in pileup:
-                name = entry.split()[0]
-                if fasta_name == name:
-                    pos = int(entry.split()[1])
-                    if count == pos:
-                        seq.append(parse_entry(entry))
-                        count += 1
-                    else:
-                        while count < pos:
-                            seq.append((fasta_seq[count - 1], 0))
-                            count += 1
-                        seq.append(parse_entry(entry))
-                        count += 1
-        process_seq(seq, name)
+    with open(sys.argv[1]) as pileup:
+        for entry in pileup:
+            name = entry.split()[0]
+            if name == fasta_name:
+                seq_count = compare_position(count, seq, entry, fasta_seq)
+                seq = seq_count[0]
+                count = seq_count[1]
+            else:
+                if fasta_name == "":
+                    fasta_name = fasta[name].id
+                    fasta_seq = fasta[name].seq
+                    seq_count = compare_position(count, seq, entry, fasta_seq)
+                    seq = seq_count[0]
+                    count = seq_count[1]
+                else:
+                    seq = final_positions(count, seq, fasta_seq)
+                    seq = seq_count[0]
+                    final_seq_coords = process_seq(seq, fasta_seq)
+                    write_file(fasta_name, final_seq_coords[0], final_seq_coords[1],
+                               out_file[0], out_file[1])
+                    seq = []
+                    count = 1
+                    fasta_name = fasta[name].id
+                    fasta_seq = fasta[name].seq
+                    seq_count = compare_position(count, seq, entry, fasta_seq)
+                    seq = seq_count[0]
+                    count = seq_count[1]
+        seq = final_positions(count, seq, fasta_seq)
+        seq = seq_count[0]
+        final_seq_coords = process_seq(seq, fasta_seq)
+        write_file(name, final_seq_coords[0], final_seq_coords[1], out_file[0],
+               out_file[1])
 
 
 if __name__ == "__main__":
