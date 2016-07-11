@@ -115,15 +115,7 @@ def process_seq(seq, fasta_seq):
                 c += 1
     return (final_seq, coord_vector)
 
-def write_file(name, seq, coord_vector, out_fasta, out_coord):
-    out_fasta = open(out_fasta, "a")
-    out_fasta.write(">" + name + "\n" + seq + "\n")
-    out_fasta.close()
 
-    out_coord = open(out_coord, "a")
-    out_coord.write(name + "\t" + ",".join(map(str, coord_vector)) + "\n")
-    out_coord.close()
-    
 def parse_entry(entry):
     """ Parsea los registros de pileup para posterior procesado y controla
     el pipeline  Input: linea de una salida de pileup
@@ -136,11 +128,21 @@ def parse_entry(entry):
         qual_list = entry.split()[5]
         base_list_new = process_nuc(ref, base_list)
         qual_list_new = process_qual(qual_list)
-        base_list_filtered = filter_by_qual(base_list_new, qual_list_new)        
+        base_list_filtered = filter_by_qual(base_list_new, qual_list_new)
         seq_aux = get_base(ref, base_list_filtered)
         return seq_aux
     else:
         return (ref, 0, 0, 0, 1, ref)
+
+
+def write_file(name, seq, coord_vector, out_fasta, out_coord):
+    out_fasta = open(out_fasta, "a")
+    out_fasta.write(">" + name + "\n" + seq + "\n")
+    out_fasta.close()
+
+    out_coord = open(out_coord, "a")
+    out_coord.write(name + "\t" + ",".join(map(str, coord_vector)) + "\n")
+    out_coord.close()
 
 
 def check_new_files(fasta_file):
