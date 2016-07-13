@@ -11,13 +11,14 @@ def process_nuc(ref, base_list):
     Output: lista de bases para cada posicion
     """
     base_list_new = []
-    base_list = base_list.replace(".", ref).replace(",", ref).replace("*","").upper()
-    indels =  set(re.findall("\d+", base_list))
+    base_list = base_list.replace(".", ref).replace(",", ref).
+    replace("*", "").upper()
+    indels = set(re.findall("\d+", base_list))
     indels = "|".join([".."+i+".{"+i+"}" for i in indels])
-    base_list = re.sub('\^.(.)', lambda x:x.expand(r'\1').lower(), base_list)
-    base_list = re.sub('(.)\$', lambda x:x.expand(r'\1').lower(), base_list)
-    indels_new = map(lambda x:x.upper(), re.findall(indels,base_list))
-    base_list = list(re.sub(indels,'',base_list))
+    base_list = re.sub('\^.(.)', lambda x: x.expand(r'\1').lower(), base_list)
+    base_list = re.sub('(.)\$', lambda x: x.expand(r'\1').lower(), base_list)
+    indels_new = map(lambda x: x.upper(), re.findall(indels, base_list))
+    base_list = list(re.sub(indels, '', base_list))
     return base_list + indels_new
 
 
@@ -209,8 +210,8 @@ def main(pileup_file, fasta_file):
                     seq = final_positions(count, seq, fasta_seq)
                     seq = seq_count[0]
                     final_seq_coords = process_seq(seq, fasta_seq)
-                    write_file(fasta_name, final_seq_coords[0], final_seq_coords[1],
-                               out_file[0], out_file[1])
+                    write_file(fasta_name, final_seq_coords[0],
+                               final_seq_coords[1], out_file[0], out_file[1])
                     seq = []
                     count = 1
                     fasta_name = fasta[name].id
@@ -222,7 +223,7 @@ def main(pileup_file, fasta_file):
         seq = seq_count[0]
         final_seq_coords = process_seq(seq, fasta_seq)
         write_file(name, final_seq_coords[0], final_seq_coords[1], out_file[0],
-               out_file[1])
+                   out_file[1])
 
 
 if __name__ == "__main__":
