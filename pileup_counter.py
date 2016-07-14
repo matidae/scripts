@@ -9,8 +9,8 @@ def process_nuc(ref, base_list):
                 replace("*", "").upper()
     indels = set(re.findall("\d+", base_list))
     indels = "|".join([".."+i+".{"+i+"}" for i in indels])
-    base_list = re.sub('\^.(.)', lambda x: x.expand(r'\1').lower(), base_list)
-    base_list = re.sub('(.)\$', lambda x: x.expand(r'\1').lower(), base_list)
+    base_list = re.sub('\^.(.)', lambda x: x.expand(r'\1').upper(), base_list)
+    base_list = re.sub('(.)\$', lambda x: x.expand(r'\1').upper(), base_list)
     indels_new = map(lambda x: x.upper(), re.findall(indels, base_list))
     indels_new_aux = []
     for i in indels_new:
@@ -22,8 +22,9 @@ def process_nuc(ref, base_list):
 
 def sort_list(proc_list):
     data = set(proc_list)
-    sort_list_aux = [(i, proc_list.count(i)) for i in data]
-    return sorted(sort_list_aux, key=lambda x: x[1], reverse=True)
+    total = len(proc_list) * 1.0
+    sort_list_aux = [(i, proc_list.count(i), proc_list.count(i)/total) for i in data]
+    return sorted(sort_list_aux, key=lambda x: x[2], reverse=True)
 
 
 def main(pileup_file):
@@ -34,7 +35,17 @@ def main(pileup_file):
             base_list = entry.split()[4]
             proc_list = process_nuc(ref, base_list)
             sorted_list = sort_list(proc_list)
-            print pos, ref, sorted_list
+            string_list = ""
+            for tup in sorted_list:
+                c = 0
+                for elem in tup:
+                    if c == 2:
+                        string_list += " " + str('{:.2f}'.format(elem))
+                    else:
+                        string_list += " " + str(elem)
+                    c += 1
+
+            print pos, ref, string_list
 
 if __name__ == "__main__":
     pileup_file = sys.argv[1]
