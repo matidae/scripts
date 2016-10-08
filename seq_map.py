@@ -73,12 +73,16 @@ def is_del(seq, c, del_len):
     Input: entrada con la delecion, posicion, largo de la delecion
     Output: booleano resultado de la evaluacion
     """
+    isdel = False
     for_del = seq[c][1]
     not_del = 0
     for i in xrange(del_len):
         if len(seq) > c+i+1:
             not_del += seq[c+i+1][1] * seq[c+i+1][2]
-    return for_del > not_del
+    not_del = not_del/del_len
+    if for_del > 2:
+        isdel = for_del > not_del * 1.3
+    return isdel
 
 
 def process_seq(seq, fasta_seq):
