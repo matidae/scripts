@@ -104,7 +104,7 @@ def process_seq(seq, fasta_seq):
                 isdel = is_del(seq, c, del_len)
                 if isdel:
                     final_seq += seq[c][0][0]
-                    coord_vector = coord_vector + [-1] * del_len
+                    coord_vector = coord_vector + [0] + [-1] * del_len
                     c += del_len + 1
                 else:
                     final_seq += seq[c][0][0]
