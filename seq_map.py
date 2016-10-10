@@ -99,10 +99,22 @@ def process_seq(seq, fasta_seq):
             coord_vector.append(0)
             c += 1
         else:
-            if "-" in seq[c][0]:
+    final_seq = ""
+    c = 0
+    coord_vector = []
+    while c < len(seq):
+        if seq[c][3] > 2:
+            if (seq[c][4] > 0.25 and seq[c][3] > 100) or \
+               (seq[c][4] > 0.33 and seq[c][3] <= 100) or \
+               ((seq[c][1]*1.0)/seq[c][3] < 0.33):
+                    final_seq += seq[c][5]
+                    coord_vector.append(0)
+                    c += 1
+            elif "-" in seq[c][0]:
                 del_len = int(re.findall('\d+', seq[c][0])[0])
                 isdel = is_del(seq, c, del_len)
                 if isdel:
+                    sys.exit
                     final_seq += seq[c][0][0]
                     coord_vector = coord_vector + [0] + [-1] * del_len
                     c += del_len + 1
@@ -118,7 +130,12 @@ def process_seq(seq, fasta_seq):
                 final_seq += seq[c][0]
                 coord_vector.append(0)
                 c += 1
+        else:
+            final_seq += seq[c][5]
+            coord_vector.append(0)
+            c += 1
     return (final_seq, coord_vector)
+
 
 
 def parse_entry(entry):
