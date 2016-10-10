@@ -48,8 +48,8 @@ def filter_by_qual(base_list_new, qual_list_new):
 def get_base(ref, base_list_filtered):
     """ Determina que base corresponde en una posicion dada.
     Input: base de referencia, lista de bases en esa posicion
-    Output: base mas probable, conteo de esa base, prop de read tails,
-    depth total, prop de base ref
+    Output: base mas probable, conteo de esa base, prop de reads no tails,
+    depth total, prop de base ref, base de ref
     """
     base_set = list(set([x.upper() for x in base_list_filtered]))
     base_count = []
@@ -106,7 +106,7 @@ def process_seq(seq, fasta_seq):
         if seq[c][3] > 2:
             if (seq[c][4] > 0.25 and seq[c][3] > 100) or \
                (seq[c][4] > 0.33 and seq[c][3] <= 100) or \
-               ((seq[c][1]*1.0)/seq[c][3] < 0.33):
+               ((seq[c][1] * 1.0)/seq[c][3] < 0.33):
                     final_seq += seq[c][5]
                     coord_vector.append(0)
                     c += 1
@@ -135,7 +135,6 @@ def process_seq(seq, fasta_seq):
             coord_vector.append(0)
             c += 1
     return (final_seq, coord_vector)
-
 
 
 def parse_entry(entry):
