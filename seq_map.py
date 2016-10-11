@@ -96,9 +96,97 @@ def process_seq(seq, fasta_seq):
     while c < len(seq):
         if seq[c][4] > 0.25 and seq[c][3] > 100:
             final_seq += seq[c][5]
-            coord_vector.append(0)
-            c += 1
-        else:
+#!/usr/bin/env python
+import sys
+import re
+import os.path as path
+from Bio import SeqIO
+
+
+def process_nuc(ref, base_list):
+    """Parsea una entrada de mapeo del pileup a un formato mas legible.
+    Input: base de referencia, lista de bases mapeadas en formato CIGAR.
+    Output: lista de bases para cada posicion
+    """
+    base_list_new = []
+    base_list = base_list.replace(".", ref).replace(",", ref).replace("*",ref).upper()
+    indels =  set(re.findall("\d+", base_list))
+    indels = "|".join([".."+i+".{"+i+"}" for i in indels])
+    base_list = re.sub('\^.(.)', lambda x:x.expand(r'\1').lower(), base_list)
+    base_list = re.sub('(.)\$', lambda x:x.expand(r'\1').lower(), base_list)
+    indels_new = map(lambda x:x.upper(), re.findall(indels,base_list))
+    base_list = list(re.sub(indels,'',base_list))
+    return base_list + indels_new
+
+
+def process_qual(qual_list):
+    """Procesa un string de calidad. Input: ASCII string. Output:INT string"""
+    qual_list_new = []
+    for qual in qual_list:
+        qual_list_new.append(ord(qual))
+    return qual_list_new
+
+
+def filter_by_qual(base_list_new, qual_list_new):
+    """Elimina bases con calidad inferior a 20.
+    Input: lista de bases, lista de calidades como integers.
+    Output: lista de bases trimmeadas en base a su score de calidad.
+    """
+    c = 0
+    base_list_filtered = []
+    qual_list_filtered = []
+    for base, qual in zip(base_list_new, qual_list_new):
+        if qual >= 20:
+            base_list_filtered.append(base)
+            qual_list_filtered.append(qual)
+    return base_list_filtered
+
+
+def get_base(ref, base_list_filtered):
+    """ Determina que base corresponde en una posicion dada.
+    Input: base de referencia, lista de bases en esa posicion
+    Output: base mas probable, conteo de esa base, prop de reads no tails,
+    depth total, prop de base ref, base de ref
+    """
+    base_set = list(set([x.upper() for x in base_list_filtered]))
+    base_count = []
+    for base in base_set:
+        base_count.append(base_list_filtered.count(base))
+    if sum(base_count) > 0:
+        seq = base_set[base_count.index(max(base_count))]
+        max_count = max(base_count)
+        prop_end = 1 - base_list_filtered.count(seq.lower())*1.0/max_count
+        prop_ref = (base_list_filtered.count(ref) + base_list_filtered.
+                    count(ref.lower())) * 1.0 / len(base_list_filtered)
+        return (seq, max_count, prop_end, len(base_list_filtered),
+                prop_ref, ref)
+    else:
+        return (ref, 0, 0, 0, 1, ref)
+
+
+def is_del(seq, c, del_len):
+    """ Evalua si existe la delecion contando cuantos reads en posiciones
+    posteriores avalan la delecion.
+    Input: entrada con la delecion, posicion, largo de la delecion
+    Output: booleano resultado de la evaluacion
+    """
+    isdel = False
+    for_del = seq[c][1]
+    not_del = 0
+    for i in xrange(del_len):
+        if len(seq) > c+i+1:
+            not_del += seq[c+i+1][1] * seq[c+i+1][2]
+    not_del = not_del/del_len
+    if for_del > 2:
+        isdel = for_del > not_del * 1.3
+    return isdel
+
+
+def process_seq(seq, fasta_seq):
+    """ Evalua la base considerando su contexto, considerando depth e indels
+    Input: lista de elementos de secuencia que contienen la salida de get_base
+    Output: base a imprimir
+    """
     final_seq = ""
     c = 0
     coord_vector = []
@@ -106,7 +194,7 @@ def process_seq(seq, fasta_seq):
         if seq[c][3] > 2:
             if (seq[c][4] > 0.25 and seq[c][3] > 100) or \
                (seq[c][4] > 0.33 and seq[c][3] <= 100) or \
-               ((seq[c][1] * 1.0)/seq[c][3] < 0.33):
+               ((seq[c][1]*1.0)/seq[c][3] < 0.33):
                     final_seq += seq[c][5]
                     coord_vector.append(0)
                     c += 1
